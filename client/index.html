@@ -7,6 +7,7 @@
 
     <!-- dependencies -->
     <script src="bower_components/jquery/jquery.min.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
     <!-- your scripts -->
     <script src="scripts/config.js"></script>
     <script src="scripts/app.js"></script>
@@ -15,6 +16,18 @@
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
+      <!-- input form for messages -->
+      <!-- does input need to be wrapped in a form??? -->
+      <input type="text" class="messageInput">Type messages here</input>
+      <!-- send chat to server button -->
+      <button type="send" class="sendMessages">Send</button>
+      <!-- button to create a room -->
+      <input type="button" class="createRoom">Create a new chat room</input>
+      <!-- div for message list -->
+      <div class="chatMessages"></div>
+      <!-- div for list of friends -->
+      <div class="friendList"></div>
+
     </div>
   </body>
 </html>
