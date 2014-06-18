@@ -9,17 +9,20 @@ app.friends = {};
 
 //click listeners for interaction with the html
 app.init = function() {
-	console.log("initted");
-	app.username = window.location.search.substr(10);
-	app.loadAll();
+	console.log("running");
+	// app.username = window.location.search.substr(10);
 	app.text = $('#messageInput');
+	app.loadAll();
 	app.roomMenu = $('#roomSelect');
 
 	$('.submit').on('click', app.handleSubmit);
 
 	$("#createRoom").on("click", app.addRoom);
 
-	$('.chatUser').on('click', app.addFriend); 
+	$('#chats').on('click', '.chatUser', function() {
+		var selectedUser = $(this).text();
+		app.addFriend(selectedUser);
+	});
 
 	$('#refresh').on("click", function() {
 		app.clearMessages();
@@ -27,10 +30,15 @@ app.init = function() {
 	});
 };
 
+app.loadAll = function () {
+	app.fetch();
+	setInterval(app.fetch, 10000);
+};
+
 //compiles message content for sending
 app.handleSubmit = function(e) {
-	//this is for preventing default form behavior (refresh after submission)
 	e.preventDefault();
+
 	var message = {
 		'username': app.escaper(app.userName),
 		'text': app.escaper(app.text.val()),
@@ -40,21 +48,37 @@ app.handleSubmit = function(e) {
 	app.send(message);
 };
 
-//send messages to server
-app.send = function(message) {
-	$.ajax({
-		url: app.server,
-		type: 'POST',
-		data: JSON.stringify(message),
-		contentType: 'application/json',
-		success: function() {
-			console.log('chatterbox: Message sent');
-		},
-		error: function() {
-			console.error('chatbox: Failed to send message');
-		}
-	});
+//add message to DOM once fetched
+app.addMessage = function (message) {
+	var cleanText = app.escaper(message.text);
+	var cleanUserName = app.escaper(message.username);
+  var cleanRoomName = app.escaper(message.roomname) || undefined;
+
+
+	var messageText = $("<div class='chatContent'>" + cleanText + "</div>");
+	var messageUser = $("<span class='chatUser'>" + cleanUserName + "</span>");
+	var messageRoom = $("<br/><br/><span class='whichRoom'>" + "[" + cleanRoomName + "] " + "</span>");
+	var messageContainer = $("<div class='container'></div>");
+
+	messageContainer.append(messageRoom, messageUser, messageText);
+
+	if (app.friends[cleanUserName]) {
+		messageContainer.toggleClass('friend');
+	}
+
+	return messageContainer;
 };
+
+app.addToDom = function (message) {
+  var readyMessage = app.addMessage(message);
+  $('#chats').prepend(readyMessage);
+}
+
+app.processMessages = function (messages) {
+	for( var i = messages.length; i > 0; i-- ){
+    app.addToDom(messages[i-1]);
+  }
+}
 
 //get new messages from server
 app.fetch = function() {
@@ -64,15 +88,29 @@ app.fetch = function() {
 		data: {order: '-createdAt'},
 		contentType: 'application/json',
 		success: function(json) {
-			_.each(json.results, function(message) {
-				app.addMessage(message);
-			});
+			app.processMessages(json.results);
 		},
 		complete: function (json) {
 		}
 	});
 };
 
+//send messages to server
+app.send = function(message) {
+	$.ajax({
+		url: app.server,
+		type: 'POST',
+		data: JSON.stringify(message),
+		contentType: 'application/json',
+		success: function(json) {
+			console.log('chatterbox: Message sent');
+			app.addToDom(message);
+		},
+		error: function() {
+			console.error('chatbox: Failed to send message');
+		}
+	});
+};
 //escape user input for incoming and outoging messages and usernames
 app.escaper = function(input) {
 	if (input !== undefined && input !== null) {
@@ -83,27 +121,6 @@ app.escaper = function(input) {
 		.replace(/\"/g, '&quot;')
 		.replace(/\'/g, '&#39;');
 	}
-};
-
-
-//add message to DOM once fetched
-app.addMessage = function(message) {
-
-		var cleanText = app.escaper(message.text);
-		var cleanUserName = app.escaper(message.username);
-	  var cleanRoomName = app.escaper(message.roomname) || undefined;
-
-		var messageText = $("<div class='chatContent'>" + cleanText + "</div>");
-		var messageUser = $("<span class='chatUser'>" + cleanUserName + ": " + "</span>");
-		var messageRoom = $("<br/><br/><span class='whichRoom'>" + "[" + cleanRoomName + "] " + "</span>");
-		var messageContainer = $("<div class='container'></div>");
-
-		messageText.prepend(messageUser);
-		messageText.prepend(messageRoom);
-		messageContainer.append(messageText);
-
-
-		$('#chats').append(messageContainer);
 };
 
 //clear messages from DOM
@@ -122,19 +139,9 @@ app.addRoom = function() {
 
 //add friends
 app.addFriend = function (newFriend) {
-	if (!friends[newFriend]) {
-			friends[newFriend] = true;
+	if (!app.friends[newFriend]) {
+			app.friends[newFriend] = true;
+	} else {
+		delete app.friends[newFriend];
 	}
-	$('.chatUser:contains(' + newFriend + ')').closest('.container').toggleClass('friend');
 }; 
-
-
-app.loadAll = function () {
-	app.fetch();
-	setInterval(app.fetch, 10000);
-};
-
-//create a friend class
-//show anything with friend class in bold
-//click a username, add it to friend list if not already there
-//add friend class to everything in friend list

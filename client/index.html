@@ -21,23 +21,17 @@
     <div id="main">
       <h1>chatterbox</h1>
       <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
-      <!-- input form for messages -->
       <form action="#" id="send" method="post">
         <input type="text" name="message"id="messageInput"/>
         <input type="submit" name="submit" class="submit"/>
       </form>
-      <!-- button to create a room -->
       <input type="button" id="createRoom">Create a new chat room/>
-      <!-- div for message list -->
-      <div id="chats"></div>
-      <!-- div for chatrooms -->
+      <button id="refresh">Refresh messages</button>
       <div id="rooms">
         Room:
         <select id="roomSelect"></select>
       </div>
-      <!-- button to refresh messages -->
-      <button id="refresh">Refresh messages</button>
-      <div class="friendList">Your Friends</div>
+      <div id="chats"></div>
 
     </div>
   </body>
