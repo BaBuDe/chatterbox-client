@@ -13,20 +13,31 @@
     <script src="scripts/app.js"></script>
   </head>
   <body>
+    <script>
+      $(function() {
+        app.init();
+      });
+    </script>
     <div id="main">
       <h1>chatterbox</h1>
-      <!-- Your HTML goes here! -->
+      <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
       <!-- input form for messages -->
-      <!-- does input need to be wrapped in a form??? -->
-      <input type="text" class="messageInput">Type messages here</input>
-      <!-- send chat to server button -->
-      <button type="send" class="sendMessages">Send</button>
+      <form action="#" id="send" method="post">
+        <input type="text" name="message"id="messageInput"/>
+        <input type="submit" name="submit" class="submit"/>
+      </form>
       <!-- button to create a room -->
-      <input type="button" class="createRoom">Create a new chat room</input>
+      <input type="button" id="createRoom">Create a new chat room/>
       <!-- div for message list -->
-      <div class="chatMessagesDiv"></div>
-      <!-- div for list of friends -->
-      <div class="friendList"></div>
+      <div id="chats"></div>
+      <!-- div for chatrooms -->
+      <div id="rooms">
+        Room:
+        <select id="roomSelect"></select>
+      </div>
+      <!-- button to refresh messages -->
+      <button id="refresh">Refresh messages</button>
+      <div class="friendList">Your Friends</div>
 
     </div>
   </body>

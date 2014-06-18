@@ -3,6 +3,7 @@ body {
     text-align: center;
     padding: 0 25px;
     font-family: arial, sans-serif;
+    overflow: scroll;
 }
 
 #main {
@@ -66,7 +67,16 @@ form input[type=text] {
 }
 
 .chat .username {
-    font-weight: 800;
+    font-weight: 700;
+    color: blue;
+}
+
+.friend {
+    font-weight: bold;
+}
+
+.chatUser {
+    color: green;
 }
 
 .chat:hover {
